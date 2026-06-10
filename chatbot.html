@@ -3,6 +3,11 @@
   <head>
     <title>Chatbot</title>
     <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin-top: 0px;
+        margin-bottom: 0px;
+      }
       .send-button {
         background-color: rgb(25, 135, 84);
         color: white;
@@ -24,6 +29,7 @@
 
       .chat-input-container {
         display: flex;
+        margin-bottom: 60px;
       }
 
       .app-container {
@@ -31,6 +37,45 @@
         margin-left: auto;
         margin-right: auto;
         margin-top: 20px;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .chat-message-user {
+        display: flex;
+        justify-content: end;
+        align-items: start;
+
+      }
+
+      .chat-message-chatbot {
+        display: flex;
+        justify-content: start;
+        align-items: start;
+      }
+
+      .chat-message-text {
+        background-color: rgb(238, 238, 238);
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 20px;
+        max-width: 300px;
+
+      }
+
+      .chat-message-profile {
+        width: 45px;
+        height: 45px;
+      }
+
+      .chat-messages-container {
+        flex-grow: 1;
+        margin-top: 20px;
+        overflow: scroll;
+        scrollbar-width: none;
       }
     </style>
   </head>
@@ -106,19 +151,32 @@
         );
       } */
       return (
-        <div>
+        <div className={
+          sender === 'user' 
+            ? 'chat-message-user' 
+            : 'chat-message-chatbot'}>
           {sender === 'chatbot' && (
-            <img src="../images/robot.png" alt="Robot" width="50" />
+            <img src="../images/robot.png" alt="Robot" className="chat-message-profile" />
           )}
-          {message}
+          <div className="chat-message-text">
+            {message}
+          </div>
           {sender === 'user' && (
-            <img src="../images/user.png" alt="User" width="50" />
+            <img src="../images/user.png" alt="User" className="chat-message-profile" />
           )}
         </div>
       );
     }
 
     function ChatMessages({ chatMessages }) {
+      const chatMessagesRef = React.useRef(null);
+
+      React.useEffect(() => {
+        const containerElem = chatMessagesRef.current
+        if (containerElem) {
+          containerElem.scrollTop = containerElem.scrollHeight;
+        }
+      }, [chatMessages]);
       
       const chatMessageComponents = chatMessages.map((chatMessage) => {
         return (
@@ -132,9 +190,12 @@
 
 
       return (
-        <>   
+        <div 
+          className="chat-messages-container"
+          ref={chatMessagesRef}
+        >   
           {chatMessageComponents}
-        </>
+        </div>
       )
     }
 
@@ -168,12 +229,12 @@
 
       return (
         <div className="app-container">
+          <ChatMessages
+            chatMessages={chatMessages} 
+          />
           <ChatInput 
             chatMessages={chatMessages}
             setChatMessages={setChatMessages}  
-          />
-          <ChatMessages
-            chatMessages={chatMessages} 
           />
         </div>
       )
